@@ -32,6 +32,7 @@ class UserProgress(db.Model):
     last_message = db.Column(db.String)
     last_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     sent = db.Column(db.Boolean, default=False)
+    combine = db.Column(db.Boolean, default=False)
     chatbot_message_delivered = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
