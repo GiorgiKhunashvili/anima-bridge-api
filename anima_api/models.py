@@ -14,9 +14,9 @@ class User(db.Model):
 
 class PageAccess(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    bot_id = db.Column(db.Integer)
-    page_id = db.Column(db.Integer)
-    PA_TOKEN = db.Column(db.String(250))
+    bot_id = db.Column(db.Integer, unique=True)
+    page_id = db.Column(db.Integer, unique=True)
+    PA_TOKEN = db.Column(db.String(250), unique=True)
 
     def __repr__(self):
         return f"User(id '{self.id}'), 'bot_id ({self.bot_id}), '(page_id {self.page_id})', (user_id {self.user_id})"
@@ -26,15 +26,15 @@ class PageAccess(db.Model):
 
 class UserProgress(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer)
-    progress_id = db.Column(db.Integer)
-    page_id = db.Column(db.Integer)
+    user_id = db.Column(db.BigInteger, unique=True)
+    progress_id = db.Column(db.Integer, default=0)
+    page_id = db.Column(db.BigInteger, unique=True, nullable=True)
     last_message = db.Column(db.String)
-    last_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    last_date = db.Column(db.BigInteger)
     sent = db.Column(db.Boolean, default=False)
     combine = db.Column(db.Boolean, default=False)
     chatbot_message_delivered = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
-        return f"User('id {self.id}'), '(bot_id {self.bot_id}), '(page_id {self.page_id})', (user_id {self.user_id})"
+        return f"User('id {self.id}'), '(page_id {self.page_id})', (user_id {self.user_id})"
 

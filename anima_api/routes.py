@@ -1,9 +1,12 @@
 from anima_api import app
-from flask import request, jsonify
-from anima_api import VERIFY_TOKEN
+from flask import request, jsonify, render_template, url_for, flash, redirect
+from anima_api import VERIFY_TOKEN, db, bcrypt, PAGE_ACCESS_TOKEN
 from colorama import Fore
 import requests
-from .models import PageAccess
+from anima_api.background_tasks import combinator
+from anima_api.forms import RegistrationForm, LoginForm
+from .models import User, UserProgress
+from anima_api import celery
 import time
 
 
@@ -48,7 +51,6 @@ def wcapi_messages():
         return jsonify(ret_array)
     else:
         return "An internal error occured", 500
-    print("# JSON package has been " + Fore.GREEN + "[SENT]" + Fore.RESET + " to " + Fore.CYAN + "WebChat")
 
 
 @app.route('/', methods=['POST'])
@@ -58,43 +60,50 @@ def handle_messages():
     print("# Recieved new message from " + Fore.CYAN + "Facebook")
     data = request.get_json()
     print(data)
+    sender_id = data['entry'][0]['messaging'][0]['sender']['id']
+    page_id = data['entry'][0]['messaging'][0]['recipient']['id']
+    message = data['entry'][0]['messaging'][0]['message']['text']
+    timestamp = data['entry'][0]['messaging'][0]['timestamp']
+    if db.session.query(UserProgress).filter_by(user_id=int(sender_id)).scalar() is not None:
+        user = UserProgress.query.filter_by(user_id=int(sender_id)).first()
+        if user.combine:
+            old_text = user.last_message
+            user.last_message = old_text + " " + message
+        else:
+            user.last_message = message
+        user.last_date = int(timestamp/1000)
+        user.combine = True
+        db.session.commit()
+        print(user.last_message)
+        if user.sent:
+            pass
+        else:
+            combinator.delay(sender_id)
+    else:
+        user_progess = UserProgress(user_id=int(sender_id), page_id=int(page_id), last_message=message,
+                                    last_date=int(timestamp/1000))
+        db.session.add(user_progess)
+        db.session.commit()
+        combinator.delay(sender_id)
+        print("user was saved")
     return 'ok', 200
 
-#
-# @app.route('/facebook', methods=['POST'])
-# def my_test_endpoint():
-#     data = request.get_json(force=True)
-#     entry = data['entry'][0]
-#     if entry.get("messaging"):
-#         messaging_event = entry['messaging'][0]  # Gets the whole Message
-#         sender_id = messaging_event['sender']['id']  # Gets the sender ID
-#         page_id = messaging_event['recipient']['id']
-#         user = PageAccess.query.filter_by(page_id=page_id).first()
-#         pa_token = user.PA_TOKEN
-#         bot_id = user.bot_id
-#         print("# Sender ID: " + Fore.CYAN + sender_id)
-#         print("# Page ID: " + Fore.CYAN + page_id)
-#         print("# Time Delievered: " + Fore.CYAN + str(time.strftime("%d %b %Y %H:%M:%S")))
-#         if messaging_event.get("message"):
-#             if messaging_event['message'].get('text'):
-#                 message_text = messaging_event['message']['text']
-#                 if len(message_text) >= 250:
-#                     message_text = "ფრანჩესკოტოტი"
-#                 contentID = dtbs.getUser(int(sender_id), message_text, page_id)
-#                 print("# Last Content ID: " + Fore.CYAN + str(contentID))
-#                 print("# Message Text: " + message_text)
-#                 print("# Bot ID: ", bot_id)
-#                 machvibrery.mark_seen(sender_id, PA_TOKEN)
-#                 # contentID = machvibrery.send_chatbot_message(message_text, contentID, sender_id, PA_TOKEN, bot_id)
-#                 print("# New Content ID: " + Fore.CYAN + str(contentID))
-#                 dtbs.addContentID(int(sender_id), int(contentID), message_text, page_id)
-#         elif messaging_event.get("postback"):
-#             message_text = messaging_event["postback"]["payload"]
-#             contentID = dtbs.getUser(int(sender_id), message_text, page_id)
-#             print("# Last Content ID: " + Fore.CYAN + str(contentID))
-#             print("# Message Text: " + message_text)
-#             machvibrery.mark_seen(sender_id, PA_TOKEN)
-#             # contentID = machvibrery.send_chatbot_message(message_text, contentID, sender_id, PA_TOKEN, bot_id)
-#             dtbs.addContentID(int(sender_id), int(contentID), message_text, page_id)
-#
-#     return 'ok', 200
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+        flash(f'Account created for {form.username.data}!', 'success')
+        return redirect(url_for('login'))
+    return render_template('register.html', form=form)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+
+    return render_template('login.html', form=form)
