@@ -199,18 +199,23 @@ def delete_page(id):
     return redirect(url_for('home'))
 
 
-@app.route('/ola')
-def charts():
-    with open('fb_access.csv', 'r') as csv_file:
-        csv_reader = csv.reader(csv_file)
-        for line in csv_reader:
-            bot_id = line[1]
-            page_id = line[2]
-            PA_TOKEN = line[3]
-            user_id = line[4]
+# @app.route('/ola')
+# def charts():
+#     with open('fb_access.csv', 'r') as csv_file:
+#         csv_reader = csv.reader(csv_file)
+#         for line in csv_reader:
+#             bot_id = line[1]
+#             page_id = line[2]
+#             PA_TOKEN = line[3]
+#             user_id = line[4]
+#
+#             new_pages = PageAccess(bot_id=bot_id, page_id=page_id, USER_ID=user_id, PA_TOKEN=PA_TOKEN)
+#             db.session.add(new_pages)
+#             db.session.commit()
+#     return redirect(url_for('home'))
 
-            new_pages = PageAccess(bot_id=bot_id, page_id=page_id, USER_ID=user_id, PA_TOKEN=PA_TOKEN)
-            db.session.add(new_pages)
-            db.session.commit()
-    return redirect(url_for('home'))
+
+@app.route('/charts')
+def charts():
+    return render_template('charts.html')
 

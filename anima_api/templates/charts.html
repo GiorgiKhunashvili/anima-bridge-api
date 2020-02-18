@@ -1,0 +1,37 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <div class="container">
+        <canvas id="myChart"></canvas>
+    </div>
+    <script>
+        let myChart = document.getElementById('myChart').getContext('2d');
+
+        Chart.defaults.global.defaultFontFamily = 'Lato';
+        Chart.defaults.global.defaultFontSize = 19;
+        Chart.defaults.global.defaultFontColor = '#777';
+
+        let massPopChart = new Chart(myChart, {
+            type: 'bar', // bar, horizontalbar, pie, line
+            data: {
+                labels: ['Boston', 'Worcester', 'Springfield', 'Cambridge', 'Lowell', 'Brockton'],
+                datasets: [{
+                    label: 'Population',
+                    data: [694583, 185877, 155032, 118977, 111670, 95777],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)',
+                        'rgba(255, 99, 132, 0.6)'
+                    ],
+                    hoverBorderWidth:3,
+                    hoverBorderColor: '#FFF'
+                }]
+            },
+            options: {}
+        });
+    </script>
+
+{% endblock %}
