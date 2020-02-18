@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from anima_api.models import User
 
@@ -30,3 +30,10 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
 
+
+class CreateAccessPage(FlaskForm):
+    name = StringField('Title', validators=[DataRequired()])
+    bot_id = IntegerField("Bot ID", validators=[DataRequired()])
+    page_id = IntegerField("Page ID", validators=[DataRequired()])
+    pa_token = StringField('PA TOKEN', validators=[DataRequired()])
+    submit = SubmitField('Create')

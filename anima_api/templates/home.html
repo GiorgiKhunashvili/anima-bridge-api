@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+{% block content %}
+    {% for page in pages %}
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <small class="text-muted">{{ page.date_posted.strftime('%Y-%m-%d') }}</small>
+            </div>
+            <h2><a class="article-title" href="{{ url_for('page', id=page.id) }}">{{ page.name }}</a></h2>
+            <p class="article-content">{{ page.bot_id }}</p>
+          </div>
+        </article>
+    {% endfor %}
+{% endblock%}

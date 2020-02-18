@@ -1,5 +1,6 @@
 from anima_api import db, login_manager
 from flask_login import UserMixin
+from datetime import datetime
 
 
 @login_manager.user_loader
@@ -19,8 +20,10 @@ class User(db.Model, UserMixin):
 
 class PageAccess(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    bot_id = db.Column(db.Integer, unique=True)
-    page_id = db.Column(db.Integer, unique=True)
+    name = db.Column(db.String(250), nullable=False)
+    bot_id = db.Column(db.BigInteger, unique=True)
+    page_id = db.Column(db.BigInteger, unique=True)
+    date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     PA_TOKEN = db.Column(db.String(250), unique=True)
 
     def __repr__(self):

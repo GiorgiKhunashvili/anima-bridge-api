@@ -1,13 +1,13 @@
 from anima_api import app
 from flask import request, jsonify, render_template, url_for, flash, redirect
-from anima_api import VERIFY_TOKEN, db, bcrypt, PAGE_ACCESS_TOKEN
+from anima_api import VERIFY_TOKEN, db, bcrypt
 from colorama import Fore
 import requests
 from anima_api.background_tasks import combinator
-from anima_api.forms import RegistrationForm, LoginForm
-from .models import User, UserProgress
+from anima_api.forms import RegistrationForm, LoginForm, CreateAccessPage
+from .models import User, UserProgress, PageAccess
 from flask_login import login_user, current_user, logout_user, login_required
-
+from anima_api.marili import mark_seen
 
 @app.route('/', methods=['GET'])
 def verify():
@@ -63,6 +63,8 @@ def handle_messages():
     page_id = data['entry'][0]['messaging'][0]['recipient']['id']
     message = data['entry'][0]['messaging'][0]['message']['text']
     timestamp = data['entry'][0]['messaging'][0]['timestamp']
+    pa_token = PageAccess.query.filter_by(page_id=page_id)
+    mark_seen(sender_id, pa_token.PA_TOKEN)
     if db.session.query(UserProgress).filter_by(user_id=int(sender_id)).scalar() is not None:
         user = UserProgress.query.filter_by(user_id=int(sender_id)).first()
         if user.combine:
@@ -77,7 +79,7 @@ def handle_messages():
         if user.sent:
             pass
         else:
-            combinator.delay(sender_id)
+            combinator.delay(sender_id, pa_token.PA_TOKEN)
     else:
         user_progess = UserProgress(user_id=int(sender_id), page_id=int(page_id), last_message=message,
                                     last_date=int(timestamp/1000))
@@ -90,7 +92,9 @@ def handle_messages():
 
 @app.route('/home', methods=['GET'])
 def home():
-    return render_template('data.html')
+    pages = PageAccess.query.all()
+
+    return render_template('home.html', pages=pages)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -134,3 +138,60 @@ def logout():
 @login_required
 def account():
     return render_template('account.html')
+
+
+@app.route('/page-access/new', methods=['GET', 'POST'])
+@login_required
+def new_page_access():
+    form = CreateAccessPage()
+    if form.validate_on_submit():
+        page_access = PageAccess(name=form.name.data, bot_id=int(form.bot_id.data), page_id=int(form.page_id.data),
+                                PA_TOKEN=form.pa_token.data)
+        db.session.add(page_access)
+        db.session.commit()
+        flash("Page was succesfuly created", 'success')
+        return redirect(url_for('home'))
+    return render_template('create_page_access.html', form=form, legend='Create new page')
+
+
+@app.route('/page/<int:id>')
+@login_required
+def page(id):
+    page = PageAccess.query.get_or_404(id)
+    return render_template('page.html', page=page)
+
+
+@app.route('/page/<int:id>/update', methods=['GET', 'POST'])
+@login_required
+def update_page(id):
+    page = PageAccess.query.get_or_404(id)
+    form = CreateAccessPage()
+    if form.validate_on_submit():
+        page.name = form.name.data
+        page.bot_id = form.bot_id.data
+        page.page_id = form.page_id.data
+        page.PA_TOKEN = form.pa_token.data
+        db.session.commit()
+        flash('Page was successfully updated', 'success')
+        return redirect(url_for('page', id=page.id))
+    elif request.method == "GET":
+        form.name.data = page.name
+        form.bot_id.data = page.bot_id
+        form.page_id.data = page.page_id
+        form.pa_token.data = page.PA_TOKEN
+    return render_template('create_page_access.html', form=form, legend='Update Page')
+
+
+@app.route('/page/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_page(id):
+    page = PageAccess.query.get_or_404(id)
+    db.session.delete(page)
+    db.session.commit()
+    flash('Page was deleted', 'success')
+    return redirect(url_for('home'))
+
+
+@app.route('/charts')
+def charts():
+    pass
