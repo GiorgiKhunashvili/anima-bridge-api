@@ -8,6 +8,10 @@ from anima_api.forms import RegistrationForm, LoginForm, CreateAccessPage
 from .models import User, UserProgress, PageAccess
 from flask_login import login_user, current_user, logout_user, login_required
 from anima_api.marili import mark_seen
+import csv
+from anima_api.models import PageAccess
+from anima_api import db
+import time
 
 @app.route('/', methods=['GET'])
 def verify():
@@ -90,6 +94,7 @@ def handle_messages():
     return 'ok', 200
 
 
+@login_required
 @app.route('/home', methods=['GET'])
 def home():
     pages = PageAccess.query.all()
@@ -192,6 +197,18 @@ def delete_page(id):
     return redirect(url_for('home'))
 
 
-@app.route('/charts')
+@app.route('/ola')
 def charts():
-    pass
+    with open('fb_access.csv', 'r') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        for line in csv_reader:
+            bot_id = line[1]
+            page_id = line[2]
+            PA_TOKEN = line[3]
+            user_id = line[4]
+
+            new_pages = PageAccess(bot_id=bot_id, page_id=page_id, user_id=user_id, PA_TOKEN=PA_TOKEN)
+            db.session.add(new_pages)
+            db.session.commit()
+    return redirect(url_for('home'))
+

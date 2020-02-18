@@ -8,7 +8,8 @@ from flask_login import LoginManager
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = '764e997f0f5bd60035fa7596d65063581dd22ba6a5891163'
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:spongebob109@localhost:5432/anima_api"
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:spongebob109@localhost:5432/anima_bridge_api_db"
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 
 # Celery config
 app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
