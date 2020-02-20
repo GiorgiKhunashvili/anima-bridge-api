@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+<<<<<<< HEAD
       <module fileurl="file://$PROJECT_DIR$/.idea/anima_bridge_api.iml" filepath="$PROJECT_DIR$/.idea/anima_bridge_api.iml" />
+=======
+      <module fileurl="file://$PROJECT_DIR$/.idea/anima_api_bridge.iml" filepath="$PROJECT_DIR$/.idea/anima_api_bridge.iml" />
+>>>>>>> 052fe66a590f74299a9de0a0207062d3ad66163a
     </modules>
   </component>
 </project>

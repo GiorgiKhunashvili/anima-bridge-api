@@ -9,8 +9,6 @@ with open('fb_access.csv', 'r') as csv_file:
         page_id = line[2]
         PA_TOKEN = line[3]
         user_id = line[4]
-
-        new_pages = PageAccess(bot_id=bot_id, page_id=page_id, PA_TOKEN=PA_TOKEN, user_id=str(user_id))
+        new_pages = PageAccess(bot_id=bot_id, page_id=page_id, USER_ID=user_id, PA_TOKEN=PA_TOKEN)
         db.session.add(new_pages)
         db.session.commit()
-        time.sleep(1)

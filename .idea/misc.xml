@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+<<<<<<< HEAD
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.7 (anima_bridge_api)" project-jdk-type="Python SDK" />
+=======
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.6 (anima_api_bridge)" project-jdk-type="Python SDK" />
+>>>>>>> 052fe66a590f74299a9de0a0207062d3ad66163a
   <component name="PyCharmProfessionalAdvertiser">
     <option name="shown" value="true" />
   </component>

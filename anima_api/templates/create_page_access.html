@@ -57,6 +57,22 @@
                         {{ form.pa_token(class="form-control from-control-lg") }}
                     {% endif %}
                 </div>
+<<<<<<< HEAD
+=======
+                <div class="form-group">
+                    {{ form.user_id.label(class="form-control-label") }}
+                    {% if form.user_id.errors %}
+                        {{ form.user_id(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.user_id.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.user_id(class="form-control from-control-lg") }}
+                    {% endif %}
+                </div>
+>>>>>>> 052fe66a590f74299a9de0a0207062d3ad66163a
             </fieldset>
             <div class="form-group">
                 {{ form.submit(class="btn btn-outline-info") }}

@@ -36,4 +36,8 @@ class CreateAccessPage(FlaskForm):
     bot_id = IntegerField("Bot ID", validators=[DataRequired()])
     page_id = IntegerField("Page ID", validators=[DataRequired()])
     pa_token = StringField('PA TOKEN', validators=[DataRequired()])
+<<<<<<< HEAD
+=======
+    user_id = StringField('User ID ', validators=[DataRequired()])
+>>>>>>> 052fe66a590f74299a9de0a0207062d3ad66163a
     submit = SubmitField('Create')

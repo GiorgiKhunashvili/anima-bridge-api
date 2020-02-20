@@ -21,11 +21,11 @@ class User(db.Model, UserMixin):
 class PageAccess(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), nullable=True)
-    bot_id = db.Column(db.Integer, unique=True)
-    page_id = db.Column(db.BigInteger, unique=True)
-    user_id = db.Column(db.BIGINT, unique=True)
+    bot_id = db.Column(db.Integer)
+    page_id = db.Column(db.BigInteger)
     date_posted = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
-    PA_TOKEN = db.Column(db.String(250), unique=True)
+    PA_TOKEN = db.Column(db.String(250))
+    USER_ID = db.Column(db.String(300))
 
     def __repr__(self):
         return f"User(id '{self.id}'), 'bot_id ({self.bot_id}), '(page_id {self.page_id})', (user_id {self.user_id})"
@@ -47,3 +47,11 @@ class UserProgress(db.Model):
     def __repr__(self):
         return f"User('id {self.id}'), '(page_id {self.page_id})', (user_id {self.user_id})"
 
+<<<<<<< HEAD
+=======
+
+class DataAnalysis(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, nullable=False)
+    page_id = db.Column(db.Integer)
+>>>>>>> 052fe66a590f74299a9de0a0207062d3ad66163a
