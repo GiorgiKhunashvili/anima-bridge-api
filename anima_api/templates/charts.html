@@ -1,11 +1,17 @@
 {% extends 'layout.html' %}
 {% block content %}
+
     <div class="container">
+
         <canvas id="myChart"></canvas>
     </div>
     <script>
         let myChart = document.getElementById('myChart').getContext('2d');
 
+        let recivedData = {{ analysis| tojson }}
+        let botNames = Object.keys(recivedData);
+        let botCount = Object.values(recivedData);
+        console.log(recivedData)
         Chart.defaults.global.defaultFontFamily = 'Lato';
         Chart.defaults.global.defaultFontSize = 19;
         Chart.defaults.global.defaultFontColor = '#777';
@@ -13,10 +19,10 @@
         let massPopChart = new Chart(myChart, {
             type: 'bar', // bar, horizontalbar, pie, line
             data: {
-                labels: ['Boston', 'Worcester', 'Springfield', 'Cambridge', 'Lowell', 'Brockton'],
+                labels: botNames,
                 datasets: [{
-                    label: 'Population',
-                    data: [694583, 185877, 155032, 118977, 111670, 95777],
+                    label: 'Bots Statistics',
+                    data: botCount,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.6)',
                         'rgba(54, 162, 235, 0.6)',

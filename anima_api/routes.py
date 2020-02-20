@@ -1,21 +1,16 @@
-from anima_api import app
+from anima_api import app, db
 from flask import request, jsonify, render_template, url_for, flash, redirect
 from anima_api import VERIFY_TOKEN, db, bcrypt
 from colorama import Fore
 import requests
-from anima_api.background_tasks import combinator
-from anima_api.forms import RegistrationForm, LoginForm, CreateAccessPage
-from .models import User, UserProgress, PageAccess
+from .background_tasks import combinator, count_requests
+from .forms import RegistrationForm, LoginForm, CreateAccessPage
+from .models import User, UserProgress, PageAccess, DataAnalysis
 from flask_login import login_user, current_user, logout_user, login_required
-from anima_api.marili import mark_seen
+from .marili import mark_seen
 import csv
-from anima_api.models import PageAccess
-from anima_api import db
-<<<<<<< HEAD
-import time
-=======
+import json
 
->>>>>>> 052fe66a590f74299a9de0a0207062d3ad66163a
 
 @app.route('/', methods=['GET'])
 def verify():
@@ -71,14 +66,11 @@ def handle_messages():
     page_id = data['entry'][0]['messaging'][0]['recipient']['id']
     message = data['entry'][0]['messaging'][0]['message']['text']
     timestamp = data['entry'][0]['messaging'][0]['timestamp']
-<<<<<<< HEAD
-    pa_token = PageAccess.query.filter_by(page_id=page_id)
-    mark_seen(sender_id, pa_token.PA_TOKEN)
-=======
+
     # pa_token = PageAccess.query.filter_by(page_id=page_id).first()
     # print(pa_token)
     # mark_seen(sender_id, pa_token.PA_TOKEN)
->>>>>>> 052fe66a590f74299a9de0a0207062d3ad66163a
+    count_requests.delay(page_id)
     if db.session.query(UserProgress).filter_by(user_id=int(sender_id)).scalar() is not None:
         user = UserProgress.query.filter_by(user_id=int(sender_id)).first()
         if user.combine:
@@ -93,11 +85,9 @@ def handle_messages():
         if user.sent:
             pass
         else:
-<<<<<<< HEAD
-            combinator.delay(sender_id, pa_token.PA_TOKEN)
-=======
+
             combinator.delay(sender_id)
->>>>>>> 052fe66a590f74299a9de0a0207062d3ad66163a
+
     else:
         user_progess = UserProgress(user_id=int(sender_id), page_id=int(page_id), last_message=message,
                                     last_date=int(timestamp/1000))
@@ -190,10 +180,9 @@ def update_page(id):
         page.bot_id = form.bot_id.data
         page.page_id = form.page_id.data
         page.PA_TOKEN = form.pa_token.data
-<<<<<<< HEAD
-=======
+
         page.user_id = form.user_id.data
->>>>>>> 052fe66a590f74299a9de0a0207062d3ad66163a
+
         db.session.commit()
         flash('Page was successfully updated', 'success')
         return redirect(url_for('page', id=page.id))
@@ -202,10 +191,9 @@ def update_page(id):
         form.bot_id.data = page.bot_id
         form.page_id.data = page.page_id
         form.pa_token.data = page.PA_TOKEN
-<<<<<<< HEAD
-=======
+
         form.user_id.data = page.USER_ID
->>>>>>> 052fe66a590f74299a9de0a0207062d3ad66163a
+
     return render_template('create_page_access.html', form=form, legend='Update Page')
 
 
@@ -219,9 +207,8 @@ def delete_page(id):
     return redirect(url_for('home'))
 
 
-<<<<<<< HEAD
 @app.route('/ola')
-def charts():
+def csv_parser():
     with open('fb_access.csv', 'r') as csv_file:
         csv_reader = csv.reader(csv_file)
         for line in csv_reader:
@@ -230,29 +217,23 @@ def charts():
             PA_TOKEN = line[3]
             user_id = line[4]
 
-            new_pages = PageAccess(bot_id=bot_id, page_id=page_id, user_id=user_id, PA_TOKEN=PA_TOKEN)
+            new_pages = PageAccess(bot_id=bot_id, page_id=page_id, USER_ID=user_id, PA_TOKEN=PA_TOKEN)
             db.session.add(new_pages)
             db.session.commit()
     return redirect(url_for('home'))
-=======
-# @app.route('/ola')
-# def charts():
-#     with open('fb_access.csv', 'r') as csv_file:
-#         csv_reader = csv.reader(csv_file)
-#         for line in csv_reader:
-#             bot_id = line[1]
-#             page_id = line[2]
-#             PA_TOKEN = line[3]
-#             user_id = line[4]
-#
-#             new_pages = PageAccess(bot_id=bot_id, page_id=page_id, USER_ID=user_id, PA_TOKEN=PA_TOKEN)
-#             db.session.add(new_pages)
-#             db.session.commit()
-#     return redirect(url_for('home'))
 
 
 @app.route('/charts')
+@login_required
 def charts():
-    return render_template('charts.html')
->>>>>>> 052fe66a590f74299a9de0a0207062d3ad66163a
+    analysis = DataAnalysis.query.all()
+    context = {}
+    for data in analysis:
+        if data.bot_name in context:
+            context[data.bot_name] += data.count
+        else:
+            context[data.bot_name] = data.count
+
+    return render_template('charts.html', analysis=context)
+
 

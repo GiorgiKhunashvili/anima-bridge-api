@@ -47,11 +47,10 @@ class UserProgress(db.Model):
     def __repr__(self):
         return f"User('id {self.id}'), '(page_id {self.page_id})', (user_id {self.user_id})"
 
-<<<<<<< HEAD
-=======
 
 class DataAnalysis(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, nullable=False)
-    page_id = db.Column(db.Integer)
->>>>>>> 052fe66a590f74299a9de0a0207062d3ad66163a
+    page_id = db.Column(db.BigInteger)
+    bot_name = db.Column(db.String(250), nullable=True)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    count = db.Column(db.Integer, default=1)
