@@ -35,7 +35,7 @@ def send_message(recipient_id, text):
 
 
 @celery.task()
-def combinator(sender_id, pa_token):
+def combinator(sender_id, pa_token=None):
     user = UserProgress.query.filter_by(user_id=int(sender_id)).first()
     user.sent = True
     db.session.commit()
@@ -45,9 +45,9 @@ def combinator(sender_id, pa_token):
         db.session.refresh(user)
     else:
         updated_data = UserProgress.query.filter_by(user_id=int(sender_id)).first()
-        typing_on(sender_id, pa_token)
+        # typing_on(sender_id, pa_token)
         time.sleep(2)
-        typing_off(sender_id, pa_token)
+        # typing_off(sender_id, pa_token)
         send_message(updated_data.user_id, updated_data.last_message)
         print(user.last_message)
         user.combine = False

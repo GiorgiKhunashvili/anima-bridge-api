@@ -47,3 +47,8 @@ class UserProgress(db.Model):
     def __repr__(self):
         return f"User('id {self.id}'), '(page_id {self.page_id})', (user_id {self.user_id})"
 
+
+class DataAnalysis(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, nullable=False)
+    page_id = db.Column(db.Integer)

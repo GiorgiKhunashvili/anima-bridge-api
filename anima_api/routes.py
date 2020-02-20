@@ -67,8 +67,9 @@ def handle_messages():
     page_id = data['entry'][0]['messaging'][0]['recipient']['id']
     message = data['entry'][0]['messaging'][0]['message']['text']
     timestamp = data['entry'][0]['messaging'][0]['timestamp']
-    pa_token = PageAccess.query.filter_by(page_id=page_id)
-    mark_seen(sender_id, pa_token.PA_TOKEN)
+    # pa_token = PageAccess.query.filter_by(page_id=page_id).first()
+    # print(pa_token)
+    # mark_seen(sender_id, pa_token.PA_TOKEN)
     if db.session.query(UserProgress).filter_by(user_id=int(sender_id)).scalar() is not None:
         user = UserProgress.query.filter_by(user_id=int(sender_id)).first()
         if user.combine:
@@ -83,7 +84,7 @@ def handle_messages():
         if user.sent:
             pass
         else:
-            combinator.delay(sender_id, pa_token.PA_TOKEN)
+            combinator.delay(sender_id)
     else:
         user_progess = UserProgress(user_id=int(sender_id), page_id=int(page_id), last_message=message,
                                     last_date=int(timestamp/1000))

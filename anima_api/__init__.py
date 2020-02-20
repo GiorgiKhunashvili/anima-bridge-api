@@ -17,8 +17,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 
 # Celery config
-app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
-app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+app.config['CELERY_BROKER_URL'] = 'redis://redis_container:6379/0'
+app.config['CELERY_RESULT_BACKEND'] = 'redis://redis_container:6379/0'
 
 # Celery init
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
@@ -34,8 +34,8 @@ login_manager.login_message_category = 'info'
 
 # Verification token for Facebook Webhook
 VERIFY_TOKEN = "4ab1xavav69665VnFvT2u_41VwxXwvgkVsPNeC9afuE"
-PAGE_ACCESS_TOKEN = "EAAPJ755NIeIBAKoekAHntttfaGmtZCJ2PaxsfYwn1jIvr1CJ52AUYolGdIrbMdAej62ZAohbGI6IRbKYMdjq8WiQ" \
-                    "2OfGxBkgW7hzA9zKZAXduk0CVxmfrpKqWhHs3CrbSvFNtyFZAAtWKSfrptzNfK8anAl9JxVw9CZBIckqGoQZDZD"
+PAGE_ACCESS_TOKEN = "EAAX1biXFB9cBAHX13uGoGvfyjLAlcDyuz3eqOUq806xyGAySZAYesCpsKttbxznL2P0gCiAPudKUQbSpuvhEeHX24sgR" \
+                    "HMjoIKZCFZAyj6ZC6x3lmqUrdRbALcLP6kS0oIlNoOThQdEdZB8ZCvQ5jfX4kSpn3zyNiwkXLecgx3jQZDZD"
 
 
 from anima_api import routes
