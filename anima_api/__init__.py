@@ -12,7 +12,7 @@ app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app.config['SECRET_KEY'] = '764e997f0f5bd60035fa7596d65063581dd22ba6a5891163'
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://hello_flask:hello_flask@db:5432/hello_flask_dev"
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:spongebob109@localhost:5432/anima_bridge_api_db"
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'

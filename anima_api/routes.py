@@ -9,7 +9,6 @@ from .models import User, UserProgress, PageAccess, DataAnalysis
 from flask_login import login_user, current_user, logout_user, login_required
 from .marili import mark_seen
 import csv
-import json
 
 
 @app.route('/', methods=['GET'])
